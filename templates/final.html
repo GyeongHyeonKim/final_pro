@@ -6,12 +6,23 @@
 	<body>
 		<h1> Enter the URL
 		</h1>
-		<form method = "POST" action = "/info">
+		<form method = "POST" action='/info'>
 			<input name ="name" type="text" size="25"><br/>
 
 			<input type = 'submit'name='submit' value='oneUrl'>  </button>
-			<input type = 'submit'name='submit2' value='multiUrl'>  </button>
-		</FORM>
+			<input type = 'submit'name='submit2' value='multiUrl'>  </button>	
+                        {%for val in value %}
+			<li>{{val}}
+				{%if value.index(val)%3==2 %}
+			</br>
+				<form method = "POST" action = "/analyze">
+		<input type = 'submit' name='tf-idf' value='tfidf'> </button>
+                <input type = 'submit' name='Cosine' value='cosine'>  </button>
+				</form>
+	{% endif %}
+			</li>
+			{% endfor %}
+
 	</body>
 </html>
 

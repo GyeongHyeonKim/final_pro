@@ -12,8 +12,7 @@ from flask import request
 from nltk import word_tokenize
 app = Flask(__name__)
 
-output_list=[]
-word_count={}
+result=[]
 count = 0
 es_host = "127.0.0.1"
 es_port = "9200"
@@ -76,6 +75,9 @@ def helo_world():
 @app.route('/info', methods=['GET','POST'])
 def info():
     global count
+    output_list=[]
+    word_count={}
+
     start = time.time()
 
     error = None
@@ -126,11 +128,19 @@ def info():
                 "dict":word_count
 
         }
+        info_list=[]
+        info_list.append(info)
+        
+        for val in info_list:
+            result.append(val['url'])
+            result.append(val['numWord'])
+            result.append(val['time'])
+
         
         res = es.index(index='knu',doc_type ='student',id=count,body=info)
         count+=1
 
-        return render_template('info.html',value=info)
+        return render_template('final.html',value=result)
 
 
 @app.route('/analyze', methods=['GET','POST'])
@@ -148,8 +158,8 @@ def info2():
 
     tf_d={}
     idf_d={}
-
-    if request.form['tf-idf']=='tfidf':
+    tidf_dic={}
+    if request.method=='POST':
 
         for i in range(count):
             query={"query":{"bool":{"must":[{"match":{"_id":i}}]}}}
@@ -181,20 +191,21 @@ def info2():
                 if cos_res2[i]== t:
                     url_list2[i]=cos_res.index(t)   
 
-    '''        #tf-idf
-    else if request.form['Cosine']=='cosine':
+        #tf-idf
+        idf_d = compute_idf(word_list,count)
 
-            tidf_dic={}
+        for i in range(0,count):
+            tf_d = compute_tf(word_list[i])
 
-            idf_d = compute_idf(word_list,count)
+        for word,tfval in tf_d.items():
+            tidf_dic[word]=tfval*idf_d[word]
 
-            for i in range(0,count):
-                tf_d = compute_tf(word_list[i])
 
-            for word,tfval in tf_d.items():
-                tidf_dic[word]=tfval*idf_d[word]
-    '''
-    return render_template('analyze.html',value2=tidf_dic)
+        if request.form['Cosine']=='cosine':
+            return render_template('analyze.html',value2=url_list2)
+
+        elif request.form['tf-idf']=='tfidf':
+            return render_template('analyze.html',value2=tidf_dic)
 
 
 
