@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<title>Hello world!</title>
+	</head>
+	<body>
+		<div>
+			<p>
+			Hello
+			{%for val in value %}
+			{%if (val!='word')and(val!='frequency')and(val!='dict')%}
+			<li>{{value[val]}}</li>
+			{% endif %}
+			{% endfor %}
+
+			<form method = "POST" action = "/analyze">
+                   
+                        <input type = 'submit' name='tf-idf' value='tfidf'> </button>
+                        <input type = 'submit' name='Cosine' value='cosine'>  </button>
+                	</FORM>
+
+			</p>
+		</div>
+	</body>
+</html>
+
